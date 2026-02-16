@@ -1,3 +1,22 @@
+// Firebase imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+// Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyC91P4DP20kL_UvK3kIx2aKzJ795stZ8wk",
+    authDomain: "civicsense-ai-a7ebb.firebaseapp.com",
+    projectId: "civicsense-ai-a7ebb",
+    storageBucket: "civicsense-ai-a7ebb.firebasestorage.app",
+    messagingSenderId: "1022592719395",
+    appId: "1:1022592719395:web:d3a31ac556b9f061366f96",
+    measurementId: "G-5GK6YGGDGS"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('complaintForm');
     const imageInput = document.getElementById('image');
@@ -50,48 +69,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Handle form submission
-    form.addEventListener('submit', async (e) => {
+    // Handle form submission - FIRESTORE VERSION
+    form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const submitBtn = form.querySelector('.submit-btn');
-        const originalBtnText = submitBtn.innerHTML;
-        const descriptionInput = document.getElementById('description');
-        const text = descriptionInput.value;
+        const nameInput = document.querySelector("input[type='text']");
+        const descriptionInput = document.querySelector("textarea");
 
-        // Show loading state
-        submitBtn.innerHTML = '<span>Analyzing...</span>';
-        submitBtn.disabled = true;
-        submitBtn.style.opacity = '0.7';
+        const name = nameInput ? nameInput.value : "Anonymous";
+        const description = descriptionInput ? descriptionInput.value : "";
+
+        if (!description.trim()) {
+            alert("Please enter issue description");
+            return;
+        }
 
         try {
-            // 1. Attempt AI Analysis
-            const result = await analyzeComplaint(text);
+            await addDoc(collection(db, "complaints"), {
+                name: name,
+                description: description,
+                status: "Pending",
+                createdAt: new Date()
+            });
 
-            // 2. Save Data
-            saveComplaint(result);
-
-            // 3. Update UI
-            updateUI(result);
-
-            // Note: Dashboard & Officer Panel update automatically next time they are opened
-            // or we can force update if visible.
-            updateDashboard();
-
-            // 4. Show Success
-            form.classList.add('hidden');
-            successMessage.classList.remove('hidden');
-
-            // Animate progress bar (UI helper)
-            animateUrgencyBar(result.urgency);
+            alert("Complaint saved successfully!");
+            form.reset();
 
         } catch (error) {
-            console.error('Critical Error:', error);
-            alert('An error occurred. Please try again.');
-        } finally {
-            submitBtn.innerHTML = originalBtnText;
-            submitBtn.disabled = false;
-            submitBtn.style.opacity = '1';
+            console.error("Error saving complaint:", error);
+            alert("Error saving complaint. Check console.");
         }
     });
 

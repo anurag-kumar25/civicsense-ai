@@ -199,45 +199,7 @@
             </section>
         </main>
     </div>
-    <script src="script.js"></script>
-    <button onclick="saveComplaint({
-  complaintId: 'TEST001',
-  description: 'Garbage not collected',
-  issueType: 'Sanitation',
-  urgency: 'High',
-  status: 'Pending',
-  createdAt: new Date()
-})">
-        Test Save To Database
-    </button>
-
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-        import { getFirestore, collection, addDoc }
-            from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyC91P4DP20kL_UvK3kIx2aKzJ795stZ8wk",
-            authDomain: "civicsense-ai-a7ebb.firebaseapp.com",
-            projectId: "civicsense-ai-a7ebb",
-            storageBucket: "civicsense-ai-a7ebb.firebasestorage.app",
-            messagingSenderId: "1022592719395",
-            appId: "1:1022592719395:web:d3a31ac556b9f061366f96",
-            measurementId: "G-5GK6YGGDGS"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        async function saveComplaint(data) {
-            await addDoc(collection(db, "complaints"), data);
-            alert("Complaint saved!");
-        }
-
-        window.saveComplaint = saveComplaint;
-    </script>
-
+    <script type="module" src="script.js"></script>
 
 </body>
 
